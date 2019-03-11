@@ -1,0 +1,67 @@
+<html>
+    <head>
+    <title>Websocket</title>
+    <style>
+        #leaveRoom {
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script> 
+        $(() => {
+            const socket = io.connect('http://localhost:3000');
+
+            // joim işlemi
+            $('#joinRoom').on('click', () => {
+                socket.emit('joinRoom', { name: $('#roomName').val() })
+            });
+
+            socket.on('joined', () => {
+                $('#roomName, #joinRoom').hide();
+                $('#leaveRoom').show();
+            });
+
+            // leave işlemi
+            $('#leaveRoom').on('click', () => {
+                socket.emit('leaveRoom', { name: $('#roomName').val() })
+            });
+
+            socket.on('leaved', () => {
+                $('#roomName, #joinRoom').show();
+                $('#leaveRoom').hide();
+                $('#onlineCount').empty();
+            });
+
+            //////////////////////////////////////////////////////////////////////////
+            socket.on('userCount', (data) => {
+                $('#onlineCount').html('<li>Online: <b>' + data.count + '</b></li>');
+            });
+
+            socket.on('log', (data) => {
+                $('.logs').append('<li>' + data.message + '</li>')
+            });
+
+            socket.on('personalLog', (data) => {
+                $('.logs').append('<li>' + data.message + '</li>')
+            });
+            
+        });
+    </script>
+    </head>
+
+    <body>
+        <h3>Websocket!</h3>
+
+        <input type="text" placeholder="Room Name" id="roomName">
+        <button id="joinRoom">Join Room</button>
+        <button id="leaveRoom">Leave Room</button>
+        </br>
+        </br>
+        <div id="onlineCount"></div>
+        </br>
+        <ul class="logs">
+            
+        </ul>
+    </body>
+</html>
