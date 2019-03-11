@@ -10,9 +10,17 @@
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
     <script> 
         $(() => {
-            const socket = io.connect('http://localhost:3000');
+            const socket = io.connect('http://localhost:3000', {
+                reconnectionAttempts: 2,
+                reconnectionDelay: 2000,
+                //reconnection: false // tekrar bağlanmaya çalışmaz
+            });
 
             
+            socket.on('recconct_attempt', () => {
+                $('.logs').append('<li>Tekrar bağlanılıyor!</li>')
+            });
+
 
             // joim işlemi
             $('#joinRoom').on('click', () => {
